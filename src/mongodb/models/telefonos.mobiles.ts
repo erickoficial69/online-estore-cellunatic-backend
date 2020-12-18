@@ -1,0 +1,67 @@
+import {Schema,model} from 'mongoose'
+
+const telefono = new Schema({
+    marca:{
+        type:String,
+        trim:true,
+        index:true
+    },
+    modelo:{
+        type:String,
+        index:true
+    },
+    producto:{
+        type:String,
+        index:true
+    },
+    color:{
+        type:String,
+        index:true
+    },
+    estado:{
+        type:Boolean,
+        default:true
+    },
+    caracteristicas:{
+        rom:{
+            type:String
+        },
+        ram:{
+            type:String
+        },
+        cpu:{
+            type:String
+        },
+        lcd:{
+            type:String
+        },
+        network:{
+            type:String
+        },
+        os:{
+            type:String
+        }
+    },
+    imagenes:{
+        imagen1:{
+            type:String
+        },
+        imagen2:{
+            type:String
+        },
+        imagen3:{
+            type:String
+        }
+    },
+    visitas:{
+        type:Number
+    },
+    compras:{
+        type:Number
+    },
+    precio:{
+        type:Number
+    }
+},{timestamps:true,versionKey:false})
+
+export default model('Telefonos',telefono)

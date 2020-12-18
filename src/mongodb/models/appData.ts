@@ -1,0 +1,63 @@
+import {Schema,model} from 'mongoose'
+
+const app = new Schema({
+    name:{
+        type:String,
+        trim:true,
+        required:true
+    },
+    description:{
+        type:String,
+        trim:true,
+        required:true
+    },
+    keywords:{
+        type:String,
+        trim:true
+    },
+    addres:{
+        type:String,
+        trim:true,
+    },
+    contact:{
+        phone:{
+            type:String,
+            trim:true,
+        },
+        whatsapp:{
+            type:String,
+            trim:true,
+        },
+        email:{
+            type:String,
+            trim:true,
+            default:'diazwebapp@gmail.com'
+        },
+        instagram:{
+            type:String,
+            trim:true
+        },
+        facebook:{
+            type:String,
+            trim:true,
+            default:'http://facebook.com/diazwebapp'
+        },
+        telegram:{
+            type:String,
+            trim:true,
+            default:'http://instagram.com/erickoficial69'
+        },
+        twitter:{
+            type:String,
+            trim:true,
+            default:'http://twitter.com/diazwebapp'
+        },
+    },
+    logo:{
+        type:String,
+        trim:true,
+        default:'/logo.png'
+    }
+},{timestamps:true,versionKey:false})
+
+export default model('App',app)
