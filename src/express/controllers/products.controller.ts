@@ -64,7 +64,7 @@ export const remove:RequestHandler = async(req,res)=>{
         res.json(producto)
         const searchsFiles = await AccesoriosMobiles.find({producto:deleted.nombre})
 
-        searchsFiles.map(async doc =>{
+        searchsFiles.map(async (doc:any) =>{
             const document = await doc.toJSON()
             if(document.imagenes.imagen1!=='') unlink(resolve(`public/${document.imagenes.imagen1.replace(domains.backend_cellunatic,'')}`),()=>{})
             if(document.imagenes.imagen2!=='') unlink(resolve(`public/${document.imagenes.imagen2.replace(domains.backend_cellunatic,'')}`),()=>{})
