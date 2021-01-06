@@ -1,5 +1,6 @@
 import express,{Application,json, urlencoded,text} from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 import {resolve} from 'path'
 import appData from './routes/appData.routes'
 
@@ -21,6 +22,7 @@ export class App{
         this.routes()
     }
     middlewares(){
+        this.app.use(helmet())
         this.app.use(cors())
         this.app.use(urlencoded({extended:true,limit:'2048mb'}))
         this.app.use(json({limit:'2048mb'}))
