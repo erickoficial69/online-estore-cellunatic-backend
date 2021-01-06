@@ -39,13 +39,13 @@ export const getData:RequestHandler = async(req,res)=>{
 export const getTasaCambio:RequestHandler = async(req,res)=>{        
     try{
         const tasa = await TasaCambio.find().limit(1).sort({updatedAt:-1})
-        console.log(tasa)
-        /* if(tasa.length < 1){
+        
+        if(tasa.length < 1){
             const newTasa = new TasaCambio({monto:1090000})
             await newTasa.save()
             res.status(200).json(newTasa)
             return
-        } */
+        }
         res.status(200).json(tasa[0])
     }catch(err){
         console.log(err)
