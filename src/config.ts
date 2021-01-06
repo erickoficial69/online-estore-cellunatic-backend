@@ -8,6 +8,6 @@ export const mongodb={
 export const express={
         port: process.env.EXPRESS_PORT? process.env.PORT : 3001,
         domains:{
-            backend_cellunatic: process.env.CELLUNATICBACKEND || 'http://localhost:3001'
+            backend_cellunatic: process.env.CELLUNATIC_BACKEND_URI || 'http://localhost:3001'
         }
     }
