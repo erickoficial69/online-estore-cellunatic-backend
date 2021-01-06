@@ -10,7 +10,7 @@ const opts:ConnectionOptions={
 
 export default (async()=>{
     try{
-       const db = await connect(`mongodb://${mongodb.host}/${mongodb.database}`,opts)
+       const db = await connect(mongodb.uri,opts)
         console.log(db.connection.name)
     }
     catch(err){
