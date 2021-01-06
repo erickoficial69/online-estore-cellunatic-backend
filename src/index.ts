@@ -4,9 +4,8 @@ import {express} from './config'
 import './mongodb/connection.mongoose'
 
 async function main(){
-    const port= express.port
-    const app = new App(port)
-    app.listen()
+    const app = new App(express.port)
+    await app.listen()
 }
 
 main()
