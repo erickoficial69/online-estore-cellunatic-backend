@@ -75,15 +75,15 @@ export const newRepuesto:RequestHandler  = async(req,res)=>{
     try{
         const base64_1 = purifyBase64String(imagenes.imagen1)
         await decode(base64_1.base64,{ext:base64_1.ext,fname:`public/upload/${name}`})
-        newRepuesto.imagenes.imagen1 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_1.ext}`
+        newRepuesto.imagenes.imagen1 = `upload/${name+'.'+base64_1.ext}`
         
         const base64_2 = purifyBase64String(imagenes.imagen2)
         await decode(base64_2.base64,{ext:base64_2.ext,fname:`public/upload/${name+1}`})
-        newRepuesto.imagenes.imagen2 = `${domains.backend_cellunatic}/upload/${name+1+'.'+base64_2.ext}`
+        newRepuesto.imagenes.imagen2 = `upload/${name+1+'.'+base64_2.ext}`
 
         const base64_3 = purifyBase64String(imagenes.imagen3)
         await decode(base64_3.base64,{ext:base64_3.ext,fname:`public/upload/${name+2}`})
-        newRepuesto.imagenes.imagen3 = `${domains.backend_cellunatic}/upload/${name+2+'.'+base64_3.ext}`
+        newRepuesto.imagenes.imagen3 = `upload/${name+2+'.'+base64_3.ext}`
 
         const newData = new RepuestosMobiles(newRepuesto)    
     
@@ -103,15 +103,15 @@ export const deleteRepuesto:RequestHandler = async(req,res)=>{
         res.json(db_result)
         
         if(data.imagenes.imagen1!==""){
-            const imagen1 = data.imagenes.imagen1.replace(`${domains.backend_cellunatic}/`,'')
+            const imagen1 = data.imagenes.imagen1
             unlink(resolve(`public/${imagen1}`),()=>{})
         }
         if(data.imagenes.imagen2!==""){
-            const imagen2 = data.imagenes.imagen2.replace(`${domains.backend_cellunatic}/`,'')
+            const imagen2 = data.imagenes.imagen2
             unlink(resolve(`public/${imagen2}`),()=>{})
         }
         if(data.imagenes.imagen3 !==""){
-            const imagen3 = data.imagenes.imagen3.replace(`${domains.backend_cellunatic}/`,'')
+            const imagen3 = data.imagenes.imagen3
             unlink(resolve(`public/${imagen3}`),()=>{})
         }
     }catch(err){
@@ -133,14 +133,14 @@ export const updateRepuesto:RequestHandler = async(req,res)=>{
         if(verify1 === true && verify2 === false && verify3 === false){
             const base64_1 = purifyBase64String(newData.imagenes.imagen1)
             await decode(base64_1.base64,{ext:base64_1.ext,fname:`public/upload/${name}`})
-            newData.imagenes.imagen1 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_1.ext}`
+            newData.imagenes.imagen1 = `upload/${name+'.'+base64_1.ext}`
 
             const db_result = await RepuestosMobiles.findByIdAndUpdate(id,newData)
 
             res.json(db_result)
             const accJson = db_result?.toJSON()
             
-            const imagen1 = accJson?.imagenes.imagen1.replace(`${domains.backend_cellunatic}/`,'')
+            const imagen1 = accJson?.imagenes.imagen1
             unlink(resolve(`public/${imagen1}`),()=>{})
             return
         }
@@ -148,21 +148,21 @@ export const updateRepuesto:RequestHandler = async(req,res)=>{
         if(verify1 === true && verify2 ===true && verify3 === false){
             const base64_1 = purifyBase64String(newData.imagenes.imagen1)
             await decode(base64_1.base64,{ext:base64_1.ext,fname:`public/upload/${name}`})
-            newData.imagenes.imagen1 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_1.ext}`
+            newData.imagenes.imagen1 = `upload/${name+'.'+base64_1.ext}`
             
             const base64_2 = purifyBase64String(newData.imagenes.imagen2)
             await decode(base64_2.base64,{ext:base64_2.ext,fname:`public/upload/${name}`})
-            newData.imagenes.imagen2 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_2.ext}`
+            newData.imagenes.imagen2 = `upload/${name+'.'+base64_2.ext}`
             
             const db_result = await RepuestosMobiles.findByIdAndUpdate(id,newData)
 
             res.json(db_result)
             const accJson = db_result?.toJSON()
             
-            const imagen1 = accJson?.imagenes.imagen1.replace(`${domains.backend_cellunatic}/`,'')
+            const imagen1 = accJson?.imagenes.imagen1
             unlink(resolve(`public/${imagen1}`),()=>{})
 
-            const imagen2 = accJson?.imagenes.imagen2.replace(`${domains.backend_cellunatic}/`,'')
+            const imagen2 = accJson?.imagenes.imagen2
             unlink(resolve(`public/${imagen2}`),()=>{})
             return
             
@@ -172,21 +172,21 @@ export const updateRepuesto:RequestHandler = async(req,res)=>{
             
             const base64_1 = purifyBase64String(newData.imagenes.imagen1)
             await decode(base64_1.base64,{ext:base64_1.ext,fname:`public/upload/${name}`})
-            newData.imagenes.imagen1 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_1.ext}`
+            newData.imagenes.imagen1 = `upload/${name+'.'+base64_1.ext}`
             
             const base64_3 = purifyBase64String(newData.imagenes.imagen3)
             await decode(base64_3.base64,{ext:base64_3.ext,fname:`public/upload/${name}`})
-            newData.imagenes.imagen3 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_3.ext}`
+            newData.imagenes.imagen3 = `upload/${name+'.'+base64_3.ext}`
 
             const db_result = await RepuestosMobiles.findByIdAndUpdate(id,newData)
 
             res.json(db_result)
             const accJson = db_result?.toJSON()
             
-            const imagen1 = accJson?.imagenes.imagen1.replace(`${domains.backend_cellunatic}/`,'')
+            const imagen1 = accJson?.imagenes.imagen1
             unlink(resolve(`public/${imagen1}`),()=>{})
 
-            const imagen3 = accJson?.imagenes.imagen3.replace(`${domains.backend_cellunatic}/`,'')
+            const imagen3 = accJson?.imagenes.imagen3
             unlink(resolve(`public/${imagen3}`),()=>{})
             return
             
@@ -196,14 +196,14 @@ export const updateRepuesto:RequestHandler = async(req,res)=>{
             
             const base64_2 = purifyBase64String(newData.imagenes.imagen2)
             await decode(base64_2.base64,{ext:base64_2.ext,fname:`public/upload/${name}`})
-            newData.imagenes.imagen2 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_2.ext}`
+            newData.imagenes.imagen2 = `upload/${name+'.'+base64_2.ext}`
             
             const db_result = await RepuestosMobiles.findByIdAndUpdate(id,newData)
 
             res.json(db_result)
             const accJson = db_result?.toJSON()
             
-            const imagen2 = accJson?.imagenes.imagen2.replace(`${domains.backend_cellunatic}/`,'')
+            const imagen2 = accJson?.imagenes.imagen2
             unlink(resolve(`public/${imagen2}`),()=>{})
             return
             
@@ -213,21 +213,21 @@ export const updateRepuesto:RequestHandler = async(req,res)=>{
             
             const base64_2 = purifyBase64String(newData.imagenes.imagen2)
             await decode(base64_2.base64,{ext:base64_2.ext,fname:`public/upload/${name}`})
-            newData.imagenes.imagen2 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_2.ext}`
+            newData.imagenes.imagen2 = `upload/${name+'.'+base64_2.ext}`
             
             const base64_3 = purifyBase64String(newData.imagenes.imagen2)
             await decode(base64_3.base64,{ext:base64_3.ext,fname:`public/upload/${name}`})
-            newData.imagenes.imagen2 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_3.ext}`
+            newData.imagenes.imagen2 = `upload/${name+'.'+base64_3.ext}`
 
             const db_result = await RepuestosMobiles.findByIdAndUpdate(id,newData)
 
             res.json(db_result)
             const accJson = db_result?.toJSON()
             
-            const imagen2 = accJson?.imagenes.imagen2.replace(`${domains.backend_cellunatic}/`,'')
+            const imagen2 = accJson?.imagenes.imagen2
             unlink(resolve(`public/${imagen2}`),()=>{})
 
-            const imagen3 = accJson?.imagenes.imagen3.replace(`${domains.backend_cellunatic}/`,'')
+            const imagen3 = accJson?.imagenes.imagen3
             unlink(resolve(`public/${imagen3}`),()=>{})
             return
             
@@ -237,14 +237,14 @@ export const updateRepuesto:RequestHandler = async(req,res)=>{
             
             const base64_3 = purifyBase64String(newData.imagenes.imagen3)
             await decode(base64_3.base64,{ext:base64_3.ext,fname:`public/upload/${name}`})
-            newData.imagenes.imagen3 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_3.ext}`
+            newData.imagenes.imagen3 = `upload/${name+'.'+base64_3.ext}`
             
             const db_result = await RepuestosMobiles.findByIdAndUpdate(id,newData)
 
             res.json(db_result)
             const accJson = db_result?.toJSON()
             
-            const imagen3 = accJson?.imagenes.imagen3.replace(`${domains.backend_cellunatic}/`,'')
+            const imagen3 = accJson?.imagenes.imagen3
             unlink(resolve(`public/${imagen3}`),()=>{})
             return
             
@@ -253,28 +253,28 @@ export const updateRepuesto:RequestHandler = async(req,res)=>{
         if(verify1 === true && verify2 ===true && verify3 === true){
             const base64_1 = purifyBase64String(newData.imagenes.imagen1)
                 await decode(base64_1.base64,{ext:base64_1.ext,fname:`public/upload/${name}`})
-                newData.imagenes.imagen1 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_1.ext}`
+                newData.imagenes.imagen1 = `upload/${name+'.'+base64_1.ext}`
 
             const base64_2 = purifyBase64String(newData.imagenes.imagen2)
                 await decode(base64_2.base64,{ext:base64_2.ext,fname:`public/upload/${name}`})
-                newData.imagenes.imagen2 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_2.ext}`
+                newData.imagenes.imagen2 = `upload/${name+'.'+base64_2.ext}`
 
             const base64_3 = purifyBase64String(newData.imagenes.imagen3)
                 await decode(base64_3.base64,{ext:base64_3.ext,fname:`public/upload/${name}`})
-                newData.imagenes.imagen3 = `${domains.backend_cellunatic}/upload/${name+'.'+base64_3.ext}`
+                newData.imagenes.imagen3 = `upload/${name+'.'+base64_3.ext}`
                 
                 const db_result = await RepuestosMobiles.findByIdAndUpdate(id,newData)
 
                 res.json(db_result)
                 const accJson = db_result?.toJSON()
                 
-                const imagen1 = accJson?.imagenes.imagen1.replace(`${domains.backend_cellunatic}/`,'')
+                const imagen1 = accJson?.imagenes.imagen1
                 unlink(resolve(`public/${imagen1}`),()=>{})
 
-                const imagen2 = accJson?.imagenes.imagen2.replace(`${domains.backend_cellunatic}/`,'')
+                const imagen2 = accJson?.imagenes.imagen2
                 unlink(resolve(`public/${imagen2}`),()=>{})
                 
-                const imagen3 = accJson?.imagenes.imagen3.replace(`${domains.backend_cellunatic}/`,'')
+                const imagen3 = accJson?.imagenes.imagen3
                 unlink(resolve(`public/${imagen3}`),()=>{})
                 return
         }
