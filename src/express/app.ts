@@ -23,7 +23,7 @@ export class App{
     }
     middlewares(){
         this.app.use(helmet())
-        this.app.use(cors())
+        this.app.use(cors({origin:'*'}))
         this.app.use(urlencoded({extended:true,limit:'2048mb'}))
         this.app.use(json({limit:'2048mb'}))
         this.app.use(text({limit:'2048mb'}))
