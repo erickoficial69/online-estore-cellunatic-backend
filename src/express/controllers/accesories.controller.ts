@@ -78,7 +78,7 @@ export const newAccesorio:RequestHandler  = async(req,res)=>{
     const name = Date.now()
 
     try{
-        if(imagenes.imagen1!==''){
+        /* if(imagenes.imagen1!==''){
             const base64_1 = purifyBase64String(imagenes.imagen1)
             await decode(base64_1.base64,{ext:base64_1.ext,fname:`public/upload/${name}`})
             newAccesorio.imagenes.imagen1 = `upload/${name+'.'+base64_1.ext}`
@@ -94,7 +94,7 @@ export const newAccesorio:RequestHandler  = async(req,res)=>{
             const base64_3 = purifyBase64String(imagenes.imagen3)
             await decode(base64_3.base64,{ext:base64_3.ext,fname:`public/upload/${name+2}`})
             newAccesorio.imagenes.imagen3 = `upload/${name+2+'.'+base64_3.ext}`
-        }
+        } */
 
         const newData = new AccesoriosMobiles(newAccesorio)    
         await newData.save()
@@ -113,7 +113,7 @@ export const deleteAccesorio:RequestHandler = async(req,res)=>{
         const accesorie = await AccesoriosMobiles.findByIdAndDelete(req.params.id)
         res.json(accesorie)
         
-        if(data.imagenes.imagen1!==""){
+        /* if(data.imagenes.imagen1!==""){
             unlink(resolve(`public/${data.imagenes.imagen1}`),()=>{})
         }
         if(data.imagenes.imagen2!==""){
@@ -123,7 +123,7 @@ export const deleteAccesorio:RequestHandler = async(req,res)=>{
         if(data.imagenes.imagen3 !==""){
             
             unlink(resolve(`public/${data.imagenes.imagen3}`),()=>{})
-        }
+        } */
     }catch(err){
         console.log(err)
         res.json()

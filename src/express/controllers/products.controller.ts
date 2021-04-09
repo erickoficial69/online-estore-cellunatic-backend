@@ -61,17 +61,7 @@ export const remove:RequestHandler = async(req,res)=>{
     try{
         const producto = await ProductosMobiles.findByIdAndDelete(req.params.id)
         const deleted = producto?.toJSON()
-        res.json(producto)
-        const searchsFiles = await AccesoriosMobiles.find({producto:deleted.nombre})
-
-        searchsFiles.map(async (doc:any) =>{
-            const document = await doc.toJSON()
-            if(document.imagenes.imagen1!=='') unlink(resolve(`public/${document.imagenes.imagen1.replace(domains.backend_cellunatic,'')}`),()=>{})
-            if(document.imagenes.imagen2!=='') unlink(resolve(`public/${document.imagenes.imagen2.replace(domains.backend_cellunatic,'')}`),()=>{})
-            if(document.imagenes.imagen3!=='') unlink(resolve(`public/${document.imagenes.imagen3.replace(domains.backend_cellunatic,'')}`),()=>{})
-            await AccesoriosMobiles.findOneAndDelete({producto:deleted.nombre})
-        })
-        
+        res.json(producto)        
     }
     catch(err){
         console.log(err)
