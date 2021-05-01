@@ -10,6 +10,8 @@ import accesoriesRoutes from './routes/accesories.routes'
 import productsRoutes from './routes/products.routes'
 import repuestosRoutes from './routes/repuestos.routes'
 import users from './routes/users.routes'
+import devices from './routes/devices.routes'
+import sections from './routes/sections.routes'
 
 export class App{
     private app:Application
@@ -36,6 +38,8 @@ export class App{
         this.app.use(repuestosRoutes)
         this.app.use(users)
         this.app.use(appData)
+        this.app.use(devices)
+        this.app.use(sections)
     }
     async listen(){
         try{

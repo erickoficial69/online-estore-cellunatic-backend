@@ -4,7 +4,13 @@ const section = new Schema({
     title:{
         type:String,
         trim:true,
-        required:true
+        required:true,
+        unique:true
+    },
+    url:{
+        type:String,
+        trim:true,
+        unique:true
     },
     description:{
         type:String

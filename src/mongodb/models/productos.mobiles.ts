@@ -6,9 +6,21 @@ const producto = new Schema({
         unique:true,
         trim:true
     },
+    url:{
+        type:String,
+        unique:true,
+        trim:true
+    },
     seccion:{
         type:String,
-        default:"accesorios"
+        default:"accesorios",
+        trim:true
+    },
+    description:{
+        type:String
+    },
+    keywords:{
+        type:String
     },
     estado:{
         type:Boolean,

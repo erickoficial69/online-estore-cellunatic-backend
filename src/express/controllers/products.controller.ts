@@ -4,6 +4,7 @@ import { resolve } from 'path'
 import AccesoriosMobiles from '../../mongodb/models/accesorios.mobiles'
 import ProductosMobiles from '../../mongodb/models/productos.mobiles'
 import {express} from '../../config'
+import { crearURL } from '../../plugins/string_to_slug'
 const {domains} = express
 
 export const getAll:RequestHandler = async(req,res)=>{
@@ -31,13 +32,29 @@ export const getById:RequestHandler = async(req,res)=>{
 export const create:RequestHandler = async(req,res)=>{
     try{
         const {newData} = req.body
+        newData.url = crearURL(newData.nombre)
         const createData = new ProductosMobiles(newData)
         const saveData = await createData.save()
         res.json(saveData)
     }
     catch(err){
-        res.json({})
+        if(err.code == 11000){
+            res.json('producto existente')
+            return
+        }
         console.log(err)
+    }
+}
+
+export const getBySeccion:RequestHandler = async(req,res)=>{
+    console.log(req.params.seccion)
+    try{
+        const productos = await ProductosMobiles.find({seccion:req.params.seccion})
+        res.json(productos)
+    }
+    catch(err){
+        console.log(err)
+        res.json()
     }
 }
 

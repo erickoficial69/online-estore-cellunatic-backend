@@ -5,13 +5,14 @@ import {resolve} from 'path'
 import AccesoriosMobiles from '../../mongodb/models/accesorios.mobiles'
 import { purifyBase64String, verifyBase64String } from '../app'
 import {express} from '../../config'
+import { crearURL } from '../../plugins/string_to_slug'
 const {domains} = express
 
 export const getAll:RequestHandler = async(req,res)=>{
     let limit:number = req.params.limit?parseInt(req.params.limit):10
     try{
-        const accesories = await AccesoriosMobiles.find().limit(limit).sort({updatedAt:-1})
-        res.json({accesories,count:accesories.length})
+        const accesorios = await AccesoriosMobiles.find().limit(limit).sort({updatedAt:-1})
+        res.json({accesorios,count:accesorios.length})
         
     }catch(err){
         res.send()
@@ -21,16 +22,22 @@ export const getAll:RequestHandler = async(req,res)=>{
 export const getById:RequestHandler = async(req,res)=>{
     if(req.params.id){
         try{
-            const accesorie = await AccesoriosMobiles.findById(req.params.id).limit(1)
-            if(accesorie){
-                const {producto,visitas} = await accesorie.toJSON()
+            const accesorio = await AccesoriosMobiles.findById(req.params.id).limit(1)
+            if(accesorio){
+                const {producto,visitas} = await accesorio.toJSON()
                 
                 const relacionados = await AccesoriosMobiles.find({producto}).limit(6).sort({visitas:-1})
-                await AccesoriosMobiles.findByIdAndUpdate(req.params.id,{
-                    visitas:visitas+1
-                },{new:true})
+                if(visitas){
+                    await AccesoriosMobiles.findByIdAndUpdate(req.params.id,{
+                        visitas:visitas+1
+                    },{new:true})
+                }else{
+                    await AccesoriosMobiles.findByIdAndUpdate(req.params.id,{
+                        visitas:1
+                    },{new:true})
+                }
                 
-                return res.json({accesorie,relacionados})
+                return res.json({accesorio,relacionados})
             }
             res.json()
         }catch(err){
@@ -43,31 +50,31 @@ export const getById:RequestHandler = async(req,res)=>{
 
 export const getByProduct:RequestHandler = async(req,res)=>{
     const {search,limit} = req.body
-
-    if(search !==''){
+    if(search !=='' && search != undefined){
+    const param = search.replace(' ','|').replace('-','|')
         try{
 
-            const accesories = await AccesoriosMobiles.find(
+            const accesorios = await AccesoriosMobiles.find(
                 {$or:[
-                    {nombre:{$regex:search.replace(' ','|')}},
-                    {color:{$regex:search.replace(' ','|')}},
-                    {producto:{$regex:search.replace(' ','|')}},
-                    {modelo:{$regex:search.replace(' ','|')}}
+                    {nombre:{$regex:param}},
+                    {color:{$regex:param}},
+                    {producto:{$regex:param}},
+                    {modelo:{$regex:param}}
             ]}
             ).limit(limit?parseInt(limit):10).sort({createdAt:-1})
-           if(accesories){
+            
+           if(accesorios){
                
-               return res.json({accesories,count:accesories.length})
+               return res.json({accesorios,count:accesorios.length})
            }
-           res.json()
         }catch(err){
             console.log(err)
-            res.json([])
+            res.json({accesorios:[],count:0})
         }
     }
-    const accesories = await AccesoriosMobiles.find().limit(limit?parseInt(limit):10).sort({createdAt:-1})
+    const accesorios = await AccesoriosMobiles.find().limit(limit?parseInt(limit):10).sort({createdAt:-1})
     
-    res.json({accesories,count:accesories.length})
+    res.json({accesorios,count:accesorios.length})
 }
 
 
@@ -96,10 +103,21 @@ export const newAccesorio:RequestHandler  = async(req,res)=>{
             newAccesorio.imagenes.imagen3 = `upload/${name+2+'.'+base64_3.ext}`
         } */
 
+        const url_actual = crearURL(newAccesorio.nombre)
+        newAccesorio.url = url_actual
+        const existe = await AccesoriosMobiles.findOne({url:url_actual})
+        if(existe !== null){
+            console.log(existe)
+            newAccesorio.url +='_1'
+            const newData = new AccesoriosMobiles(newAccesorio)
+            const saved = await newData.save()
+            res.json(saved)
+            return
+        }
         const newData = new AccesoriosMobiles(newAccesorio)    
-        await newData.save()
-        console.log(newData)
-        res.json(newData)
+    
+        const saved = await newData.save()
+        res.json(saved)
     }catch(err){
         console.log(err)
         res.json()
@@ -110,8 +128,8 @@ export const deleteAccesorio:RequestHandler = async(req,res)=>{
     try{
         const forRemove = await AccesoriosMobiles.findById(req.params.id)
         let data = forRemove?forRemove.toJSON():null
-        const accesorie = await AccesoriosMobiles.findByIdAndDelete(req.params.id)
-        res.json(accesorie)
+        const accesorio = await AccesoriosMobiles.findByIdAndDelete(req.params.id)
+        res.json(accesorio)
         
         /* if(data.imagenes.imagen1!==""){
             unlink(resolve(`public/${data.imagenes.imagen1}`),()=>{})
@@ -145,10 +163,10 @@ export const updateAccesorio:RequestHandler = async(req,res)=>{
             await decode(base64_1.base64,{ext:base64_1.ext,fname:`public/upload/${name}`})
             newData.imagenes.imagen1 = `upload/${name+'.'+base64_1.ext}`
 
-            const accesorie = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
+            const accesorio = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
 
-            res.json(accesorie)
-            const accJson = accesorie?.toJSON()
+            res.json(accesorio)
+            const accJson = accesorio?.toJSON()
             
             const imagen1 = accJson?.imagenes.imagen1.replace(`${domains.backend_cellunatic}/`,'')
             unlink(resolve(`public/${imagen1}`),()=>{})
@@ -164,10 +182,10 @@ export const updateAccesorio:RequestHandler = async(req,res)=>{
             await decode(base64_2.base64,{ext:base64_2.ext,fname:`public/upload/${name}`})
             newData.imagenes.imagen2 = `upload/${name+'.'+base64_2.ext}`
             
-            const accesorie = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
+            const accesorio = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
 
-            res.json(accesorie)
-            const accJson = accesorie?.toJSON()
+            res.json(accesorio)
+            const accJson = accesorio?.toJSON()
             
             const imagen1 = accJson?.imagenes.imagen1.replace(`${domains.backend_cellunatic}/`,'')
             unlink(resolve(`public/${imagen1}`),()=>{})
@@ -188,10 +206,10 @@ export const updateAccesorio:RequestHandler = async(req,res)=>{
             await decode(base64_3.base64,{ext:base64_3.ext,fname:`public/upload/${name}`})
             newData.imagenes.imagen3 = `upload/${name+'.'+base64_3.ext}`
 
-            const accesorie = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
+            const accesorio = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
 
-            res.json(accesorie)
-            const accJson = accesorie?.toJSON()
+            res.json(accesorio)
+            const accJson = accesorio?.toJSON()
             
             const imagen1 = accJson?.imagenes.imagen1.replace(`${domains.backend_cellunatic}/`,'')
             unlink(resolve(`public/${imagen1}`),()=>{})
@@ -208,10 +226,10 @@ export const updateAccesorio:RequestHandler = async(req,res)=>{
             await decode(base64_2.base64,{ext:base64_2.ext,fname:`public/upload/${name}`})
             newData.imagenes.imagen2 = `upload/${name+'.'+base64_2.ext}`
             
-            const accesorie = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
+            const accesorio = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
 
-            res.json(accesorie)
-            const accJson = accesorie?.toJSON()
+            res.json(accesorio)
+            const accJson = accesorio?.toJSON()
             
             const imagen2 = accJson?.imagenes.imagen2.replace(`${domains.backend_cellunatic}/`,'')
             unlink(resolve(`public/${imagen2}`),()=>{})
@@ -229,10 +247,10 @@ export const updateAccesorio:RequestHandler = async(req,res)=>{
             await decode(base64_3.base64,{ext:base64_3.ext,fname:`public/upload/${name}`})
             newData.imagenes.imagen2 = `upload/${name+'.'+base64_3.ext}`
 
-            const accesorie = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
+            const accesorio = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
 
-            res.json(accesorie)
-            const accJson = accesorie?.toJSON()
+            res.json(accesorio)
+            const accJson = accesorio?.toJSON()
             
             const imagen2 = accJson?.imagenes.imagen2.replace(`${domains.backend_cellunatic}/`,'')
             unlink(resolve(`public/${imagen2}`),()=>{})
@@ -249,10 +267,10 @@ export const updateAccesorio:RequestHandler = async(req,res)=>{
             await decode(base64_3.base64,{ext:base64_3.ext,fname:`public/upload/${name}`})
             newData.imagenes.imagen3 = `upload/${name+'.'+base64_3.ext}`
             
-            const accesorie = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
+            const accesorio = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
 
-            res.json(accesorie)
-            const accJson = accesorie?.toJSON()
+            res.json(accesorio)
+            const accJson = accesorio?.toJSON()
             
             const imagen3 = accJson?.imagenes.imagen3.replace(`${domains.backend_cellunatic}/`,'')
             unlink(resolve(`public/${imagen3}`),()=>{})
@@ -273,10 +291,10 @@ export const updateAccesorio:RequestHandler = async(req,res)=>{
                 await decode(base64_3.base64,{ext:base64_3.ext,fname:`public/upload/${name}`})
                 newData.imagenes.imagen3 = `upload/${name+'.'+base64_3.ext}`
                 
-                const accesorie = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
+                const accesorio = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
 
-                res.json(accesorie)
-                const accJson = accesorie?.toJSON()
+                res.json(accesorio)
+                const accJson = accesorio?.toJSON()
                 
                 const imagen1 = accJson?.imagenes.imagen1.replace(`${domains.backend_cellunatic}/`,'')
                 unlink(resolve(`public/${imagen1}`),()=>{})
@@ -289,9 +307,9 @@ export const updateAccesorio:RequestHandler = async(req,res)=>{
                 return
         }
 
-        const accesorie = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
+        const accesorio = await AccesoriosMobiles.findByIdAndUpdate(id,newData)
 
-        res.json(accesorie)
+        res.json(accesorio)
         
     }catch(err){
         console.log(err)

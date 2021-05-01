@@ -14,6 +14,12 @@ const accesorio = new Schema({
         type:String,
         index:true
     },
+    description:{
+        type:String
+    },
+    keywords:{
+        type:String
+    },
     color:{
         type:String,
         index:true
@@ -21,6 +27,11 @@ const accesorio = new Schema({
     estado:{
         type:Boolean,
         default:true
+    },
+    url:{
+        type:String,
+        trim:true,
+        unique:true
     },
     imagenes:{
         imagen1:{

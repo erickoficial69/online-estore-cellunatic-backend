@@ -4,6 +4,7 @@ import {unlink} from 'fs'
 import {resolve} from 'path'
 import RepuestosMobiles from '../../mongodb/models/repuestos.mobiles'
 import { purifyBase64String, verifyBase64String } from '../app'
+import { crearURL } from '../../plugins/string_to_slug'
 
 export const getAll:RequestHandler = async(req,res)=>{
     let limit:number = req.params.limit?parseInt(req.params.limit):10
@@ -20,12 +21,19 @@ export const getById:RequestHandler = async(req,res)=>{
     if(req.params.id){
         try{
             const repuesto = await RepuestosMobiles.findById(req.params.id).limit(1)
+
             if(repuesto){
                 const {producto,visitas} = await repuesto.toJSON()
                 const relacionados = await RepuestosMobiles.find({producto}).limit(6).sort({visitas:-1})
-                await RepuestosMobiles.findByIdAndUpdate(req.params.id,{
-                    visitas:visitas+1
-                },{new:true})
+                if(visitas){
+                    await RepuestosMobiles.findByIdAndUpdate(req.params.id,{
+                        visitas:visitas+1
+                    },{new:true})
+                }else{
+                    await RepuestosMobiles.findByIdAndUpdate(req.params.id,{
+                        visitas:1
+                    },{new:true})
+                }
                 
                 return res.json({repuesto,relacionados})
             }
@@ -40,27 +48,28 @@ export const getById:RequestHandler = async(req,res)=>{
 
 export const getByProduct:RequestHandler = async(req,res)=>{
     const {search,limit} = req.body
-
-    if(search!==''){
+    if(search!=='' && search !== undefined){
         try{
             const repuestos = await RepuestosMobiles.find(
                 {$or:[
-                    {nombre:{$regex:search.replace(' ','|')}},
-                    {color:{$regex:search.replace(' ','|')}},
-                    {producto:{$regex:search.replace(' ','|')}},
-                    {modelo:{$regex:search.replace(' ','|')}}
+                    {nombre:{$regex:search.replace(' ','|').replace('-','|')}},
+                    {color:{$regex:search.replace(' ','|').replace('-','|')}},
+                    {producto:{$regex:search.replace(' ','|').replace('-','|')}},
+                    {modelo:{$regex:search.replace(' ','|').replace('-','|')}}
             ]}
             ).limit(limit?parseInt(limit):10).sort({updatedAt:-1})
             if(repuestos){
                 return res.json({repuestos,count:repuestos.length})
             }
-            res.json()
+            console.log(repuestos)
+            res.json({repuestos:[],count:0})
         }catch(err){
             console.log(err)
-            res.json()
+            res.json({repuestos:[],count:0})
         }
     }
     const repuestos = await RepuestosMobiles.find().limit(limit?parseInt(limit):10).sort({updatedAt:-1})
+    console.log(repuestos)
     res.json({repuestos,count:repuestos.length})
 }
 
@@ -71,7 +80,7 @@ export const newRepuesto:RequestHandler  = async(req,res)=>{
     const name = Date.now()
 
     try{
-        if(imagenes.imagen1 !==''){
+        /* if(imagenes.imagen1 !==''){
             const base64_1 = purifyBase64String(imagenes.imagen1)
             await decode(base64_1.base64,{ext:base64_1.ext,fname:`public/upload/${name}`})
             newRepuesto.imagenes.imagen1 = `upload/${name+'.'+base64_1.ext}`
@@ -87,12 +96,23 @@ export const newRepuesto:RequestHandler  = async(req,res)=>{
             const base64_3 = purifyBase64String(imagenes.imagen3)
             await decode(base64_3.base64,{ext:base64_3.ext,fname:`public/upload/${name+2}`})
             newRepuesto.imagenes.imagen3 = `upload/${name+2+'.'+base64_3.ext}`
+        } */
+        
+        const url_actual = crearURL(newRepuesto.nombre)
+        newRepuesto.url = url_actual
+        const existe = await RepuestosMobiles.findOne({url:url_actual})
+        if(existe !== null){
+            console.log(existe)
+            newRepuesto.url +='_1'
+            const newData = new RepuestosMobiles(newRepuesto)
+            const saved = await newData.save()
+            res.json(saved)
+            return
         }
-
         const newData = new RepuestosMobiles(newRepuesto)    
     
-        await newData.save()
-        res.json(newData)
+        const saved = await newData.save()
+        res.json(saved)
     }catch(err){
         console.log(err)
         res.json()
