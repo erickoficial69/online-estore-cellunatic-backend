@@ -16,21 +16,21 @@ export const getAll:RequestHandler = async(req,res)=>{
     }
 }
 
-export const getById:RequestHandler = async(req,res)=>{
+export const getByUrl:RequestHandler = async(req,res)=>{
 
-    if(req.params.id){
+    if(req.params.url){
         try{
-            const repuesto = await RepuestosMobiles.findById(req.params.id).limit(1)
+            const repuesto = await RepuestosMobiles.findOne({url:req.params.url}).limit(1)
 
             if(repuesto){
                 const {producto,visitas} = await repuesto.toJSON()
                 const relacionados = await RepuestosMobiles.find({producto}).limit(6).sort({visitas:-1})
                 if(visitas){
-                    await RepuestosMobiles.findByIdAndUpdate(req.params.id,{
+                    await RepuestosMobiles.findOneAndUpdate({url:req.params.url},{
                         visitas:visitas+1
                     },{new:true})
                 }else{
-                    await RepuestosMobiles.findByIdAndUpdate(req.params.id,{
+                    await RepuestosMobiles.findOneAndUpdate({url:req.params.url},{
                         visitas:1
                     },{new:true})
                 }

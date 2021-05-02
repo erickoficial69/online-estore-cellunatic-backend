@@ -19,20 +19,20 @@ export const getAll:RequestHandler = async(req,res)=>{
     }
 }
 
-export const getById:RequestHandler = async(req,res)=>{
-    if(req.params.id){
+export const getByUrl:RequestHandler = async(req,res)=>{
+    if(req.params.url){
         try{
-            const accesorio = await AccesoriosMobiles.findById(req.params.id).limit(1)
+            const accesorio = await AccesoriosMobiles.findOne({url:req.params.url}).limit(1)
             if(accesorio){
                 const {producto,visitas} = await accesorio.toJSON()
                 
                 const relacionados = await AccesoriosMobiles.find({producto}).limit(6).sort({visitas:-1})
                 if(visitas){
-                    await AccesoriosMobiles.findByIdAndUpdate(req.params.id,{
+                    await AccesoriosMobiles.findOneAndUpdate({url:req.params.url},{
                         visitas:visitas+1
                     },{new:true})
                 }else{
-                    await AccesoriosMobiles.findByIdAndUpdate(req.params.id,{
+                    await AccesoriosMobiles.findOneAndUpdate({url:req.params.url},{
                         visitas:1
                     },{new:true})
                 }

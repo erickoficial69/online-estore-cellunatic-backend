@@ -6,7 +6,7 @@ router.get('/accesorios/:limit?',accesorios.getAll)
 router.post('/accesorios/filter',accesorios.getByProduct)
 
 router.delete('/accesorios/:id?',accesorios.deleteAccesorio)
-router.get('/accesorios/detail/:id?',accesorios.getById)
+router.get('/accesorios/detail/:url?',accesorios.getByUrl)
 router.put('/accesorios', accesorios.updateAccesorio)
 router.post('/accesorios', accesorios.newAccesorio)
 

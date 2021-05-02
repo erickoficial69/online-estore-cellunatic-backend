@@ -18,9 +18,9 @@ export const getAll:RequestHandler = async(req,res)=>{
     }
 }
 
-export const getById:RequestHandler = async(req,res)=>{
+export const getByUrl:RequestHandler = async(req,res)=>{
     try{
-        const producto = await ProductosMobiles.findById(req.params.id)
+        const producto = await ProductosMobiles.findOne({url:req.params.url})
         res.json(producto)
     }
     catch(err){
