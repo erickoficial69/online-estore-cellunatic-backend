@@ -50,21 +50,28 @@ export const getByUrl:RequestHandler = async(req,res)=>{
 
 export const getByProduct:RequestHandler = async(req,res)=>{
     const {search,limit} = req.body
-    if(search !=='' && search != undefined){
-    const param = search.replace(' ','|').replace('-','|')
+    
+    if(search !=='' && search !== undefined ){
+       
+        let datos:string = ""
+        search.split(" ").forEach((palabra:string)=>{
+            datos += " "+palabra
+            datos = datos.replace(" ","|")
+            datos = datos.replace("-","|")
+        })
+         var ExpReg = new RegExp(`${datos.slice(1)}`,'i');
+         
         try{
-
-            const accesorios = await AccesoriosMobiles.find(
+            const accesorios:[] = await AccesoriosMobiles.find(
                 {$or:[
-                    {nombre:{$regex:param}},
-                    {color:{$regex:param}},
-                    {producto:{$regex:param}},
-                    {modelo:{$regex:param}}
+                    {nombre:{$regex:ExpReg}},
+                    {color:{$regex:ExpReg}},
+                    {producto:{$regex:ExpReg}},
+                    {modelo:{$regex:ExpReg}}
             ]}
-            ).limit(limit?parseInt(limit):10).sort({createdAt:-1})
-            
+            ).limit(limit?parseInt(limit):10).sort({nombre:-1})
+
            if(accesorios){
-               
                return res.json({accesorios,count:accesorios.length})
            }
         }catch(err){

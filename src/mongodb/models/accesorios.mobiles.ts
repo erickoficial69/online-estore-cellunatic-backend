@@ -56,4 +56,5 @@ const accesorio = new Schema({
     }
 },{timestamps:true,versionKey:false})
 
+
 export default model('Accesorio',accesorio)

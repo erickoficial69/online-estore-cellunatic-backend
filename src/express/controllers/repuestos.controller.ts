@@ -49,19 +49,25 @@ export const getByUrl:RequestHandler = async(req,res)=>{
 export const getByProduct:RequestHandler = async(req,res)=>{
     const {search,limit} = req.body
     if(search!=='' && search !== undefined){
+        let datos:string = ""
+        search.split(" ").forEach((palabra:string)=>{
+            datos += " "+palabra
+            datos = datos.replace(" ","|")
+            datos = datos.replace("-","|")
+        })
+         var ExpReg = new RegExp(`${datos.slice(1)}`,'i');
         try{
             const repuestos = await RepuestosMobiles.find(
                 {$or:[
-                    {nombre:{$regex:search.replace(' ','|').replace('-','|')}},
-                    {color:{$regex:search.replace(' ','|').replace('-','|')}},
-                    {producto:{$regex:search.replace(' ','|').replace('-','|')}},
-                    {modelo:{$regex:search.replace(' ','|').replace('-','|')}}
+                    {nombre:{$regex:ExpReg}},
+                    {color:{$regex:ExpReg}},
+                    {producto:{$regex:ExpReg}},
+                    {modelo:{$regex:ExpReg}}
             ]}
             ).limit(limit?parseInt(limit):10).sort({updatedAt:-1})
             if(repuestos){
                 return res.json({repuestos,count:repuestos.length})
             }
-            console.log(repuestos)
             res.json({repuestos:[],count:0})
         }catch(err){
             console.log(err)
@@ -69,7 +75,7 @@ export const getByProduct:RequestHandler = async(req,res)=>{
         }
     }
     const repuestos = await RepuestosMobiles.find().limit(limit?parseInt(limit):10).sort({updatedAt:-1})
-    console.log(repuestos)
+    
     res.json({repuestos,count:repuestos.length})
 }
 
